@@ -202,10 +202,12 @@ class StemCreator:
         print("\n[Done 0/6]\n")
         sys.stdout.flush()
         
-        callArgs = [mp4box]
-        callArgs.extend(["-add", self._convertToFormat(self._mixdownTrack, format) + "#ID=Z", outputFilePath])
-        print("\n[Done 1/6]\n")
-        sys.stdout.flush()
+        # Commenting out the addition of the mixdown track
+        # callArgs = [mp4box]
+        # callArgs.extend(["-add", self._convertToFormat(self._mixdownTrack, format) + "#ID=Z", outputFilePath])
+        # print("\n[Done 1/6]\n")
+        # sys.stdout.flush()
+        callArgs = [mp4box]  # Initializing the callArgs here instead
         conversionCounter = 1
         for stemTrack in self._stemTracks:
             callArgs.extend(["-add", self._convertToFormat(stemTrack, format) + "#ID=Z:disable"])
@@ -217,7 +219,9 @@ class StemCreator:
         metadata = base64.b64encode(metadata.encode("utf-8"))
         metadata = "0:type=stem:src=base64," + metadata.decode("utf-8")
         callArgs.extend(["-udta", metadata])
-        subprocess.check_call(callArgs)
+        callArgs.extend(["-new", outputFilePath])
+        result = subprocess.run(callArgs, capture_output=True, text=True)
+        print(result.stdout)
         sys.stdout.flush()
 
         # https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html
